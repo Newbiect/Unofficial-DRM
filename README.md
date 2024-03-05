@@ -59,3 +59,9 @@ Feel free to contribute to this project by submitting pull requests or reporting
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## A typical WidevineCdm setup for Windows x64 will contain the following files:
+
+- manifest.json
+- widevinecdm.dll
+- widevinecdmadapter.dll
