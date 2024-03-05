@@ -1,7 +1,7 @@
 import struct
 import base64
 
-class InitDataParser:
+class DATAPARSER:
     kKeyIdSize = 16
     kSystemIdSize = 16
 
@@ -10,19 +10,19 @@ class InitDataParser:
         # Build a list of the key IDs
         keyIds = []
         if type == "kIsoBmffVideoMimeType" or type == "kIsoBmffAudioMimeType" or type == "kCencInitDataFormat":
-            res = InitDataParser.parsePssh(initData, keyIds)
+            res = DATAPARSER.parsePssh(initData, keyIds)
             if res != "android::OK":
                 return res
         elif type == "kWebmVideoMimeType" or type == "kWebmAudioMimeType" or type == "kWebmInitDataFormat":
             # WebM "init data" is just a single key ID
-            if len(initData) != InitDataParser.kKeyIdSize:
+            if len(initData) != DATAPARSER.kKeyIdSize:
                 return "android::ERROR_DRM_CANNOT_HANDLE"
             keyIds.append(initData)
         else:
             return "android::ERROR_DRM_CANNOT_HANDLE"
         
         # Build the request
-        requestJson = InitDataParser.generateRequest(keyIds)
+        requestJson = DATAPARSER.generateRequest(keyIds)
         licenseRequest = bytearray(requestJson.encode())
         return "android::OK", licenseRequest
 
@@ -35,7 +35,7 @@ class InitDataParser:
         psshIdentifier = b'pssh'
         psshVersion1 = b'\x01\x00\x00\x00'
         keyIdCount = 0
-        headerSize = struct.calcsize(">I") + len(psshIdentifier) + len(psshVersion1) + InitDataParser.kSystemIdSize + struct.calcsize(">I")
+        headerSize = struct.calcsize(">I") + len(psshIdentifier) + len(psshVersion1) + DATAPARSER.kSystemIdSize + struct.calcsize(">I")
         if len(initData) < headerSize:
             return "android::ERROR_DRM_CANNOT_HANDLE"
         
@@ -57,23 +57,23 @@ class InitDataParser:
         readPosition += len(psshVersion1)
         
         # Validate system ID
-        if not InitDataParser.isClearKeyUUID(initData[readPosition:readPosition+InitDataParser.kSystemIdSize]):
+        if not DATAPARSER.isClearKeyUUID(initData[readPosition:readPosition+DATAPARSER.kSystemIdSize]):
             return "android::ERROR_DRM_CANNOT_HANDLE"
-        readPosition += InitDataParser.kSystemIdSize
+        readPosition += DATAPARSER.kSystemIdSize
         
         # Read key ID count
         keyIdCount = struct.unpack(">I", initData[readPosition:readPosition+struct.calcsize(">I")])[0]
         readPosition += struct.calcsize(">I")
         
         psshSize = 0
-        if keyIdCount * InitDataParser.kKeyIdSize != 0:
-            psshSize = keyIdCount * InitDataParser.kKeyIdSize
+        if keyIdCount * DATAPARSER.kKeyIdSize != 0:
+            psshSize = keyIdCount * DATAPARSER.kKeyIdSize
         if readPosition + psshSize != len(initData) - struct.calcsize(">I"):
             return "android::ERROR_DRM_CANNOT_HANDLE"
         
         # Calculate the key ID offsets
         for i in range(keyIdCount):
-            keyIdPosition = readPosition + (i * InitDataParser.kKeyIdSize)
+            keyIdPosition = readPosition + (i * DATAPARSER.kKeyIdSize)
             keyIds.append(initData[keyIdPosition:keyIdPosition+InitDataParser.kKeyIdSize])
         
         return "android::OK"
@@ -97,6 +97,6 @@ class InitDataParser:
 # Example usage
 # initData = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F]
 # type = "kIsoBmffVideoMimeType"
-# status, licenseRequest = InitDataParser.parse(initData, type)
+# status, licenseRequest = DATAPARSER.parse(initData, type)
 # print(status)
 # print(licenseRequest)
