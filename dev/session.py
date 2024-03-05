@@ -1,10 +1,10 @@
 import logging
 from media.stagefright import MediaErrors
-from utils import String8
-from Session import Session
-from AesCtrDecryptor import AesCtrDecryptor
-from InitDataParser import InitDataParser
-from JsonWebKey import JsonWebKey
+from utils import STRING8
+from session import SESSION
+from aesdecryptor import AESDECRYPTOR
+from dataparser import DATAPARSER
+from jsonwebkey import JSONWEBKEY
 
 class clearkeydrm:
     def __init__(self):
