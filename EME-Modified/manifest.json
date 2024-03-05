@@ -1,7 +1,7 @@
 {
+  "manifest_version": 3,
   "name": "w1devine",
   "version": "4.10.2557.0",
-  "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
   },
@@ -14,9 +14,7 @@
     }
   ],
   "action": {
-    "default_icon": {
-      "16": "assets/icon.png",
-    },
+    "default_icon": "assets/icon.png",
     "default_title": "w1devine",
     "default_popup": "index.html"
   },
