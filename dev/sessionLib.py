@@ -2,7 +2,7 @@ import logging
 from threading import Lock
 from collections import defaultdict
 
-class Session:
+class SESSION:
     def __init__(self, session_id):
         self.session_id = session_id
 
