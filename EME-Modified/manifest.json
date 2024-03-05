@@ -7,7 +7,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["https://*/*"],
       "js": ["content.js", "script.js"],
       "all_frames": true,
       "run_at": "document_start"
@@ -15,9 +15,7 @@
   ],
   "action": {
     "default_icon": {
-      "16": "assets/icon16.png",
-      "48": "assets/icon48.png",
-      "128": "assets/icon128.png"
+      "16": "assets/icon.png",
     },
     "default_title": "w1devine",
     "default_popup": "index.html"
@@ -31,7 +29,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["mod.js", "index.html", "assets/background.png"],
+      "resources": ["mod.js", "decrypt.js", "index.html", "modules/*", "assets/redhat.png"],
       "matches": ["<all_urls>"]
     }
   ]
