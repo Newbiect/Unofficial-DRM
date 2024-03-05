@@ -1,4 +1,6 @@
-pyjwt[crypto]
-pycryptodome
-protobuf==3.20.0
-pymediainfo
+cffi==1.16.0
+cryptography==42.0.5
+pycparser==2.21
+pycryptodome==3.20.0
+pycryptodomex==3.20.0
+PyJWT==2.8.0
