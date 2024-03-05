@@ -1,0 +1,38 @@
+{
+  "name": "w1devine",
+  "version": "4.10.2557.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js", "script.js"],
+      "all_frames": true,
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    },
+    "default_title": "w1devine",
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "webRequest",
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["mod.js", "index.html", "assets/background.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
