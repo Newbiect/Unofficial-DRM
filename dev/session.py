@@ -1,7 +1,7 @@
 import logging
 from media.stagefright import MediaErrors
 from utils import STRING8
-from session import SESSION
+from session_lib import SESSION
 from aesdecryptor import AESDECRYPTOR
 from dataparser import DATAPARSER
 from jsonwebkey import JSONWEBKEY
