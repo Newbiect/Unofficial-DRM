@@ -1,25 +1,22 @@
-const debug = function () {
-  let isEnabled = true;
-  return function (context, fn) {
-    const debugFn = isEnabled ? function () {
-      if (fn) {
-        const result = fn.apply(context, arguments);
-        fn = null;
-        return result;
-      }
-    } : function () {};
-    isEnabled = false;
-    return debugFn;
-  };
-}();
+const debug = function (context, fn) {
+  if (fn) {
+    return function () {
+      const result = fn.apply(context, arguments);
+      fn = null;
+      return result;
+    };
+  } else {
+    return function () {};
+  }
+};
 
-const searchRegex = function () {
+const searchRegexFunction = function () {
   return this.toString().search('(((.+)+)+)+$').toString().constructor(this).search('(((.+)+)+)+$');
 };
 
-searchRegex();
+const searchRegex = searchRegexFunction(); // First declaration of searchRegex
 
-const errorHandler = function () {
+const errorHandler = (function () {
   let isEnabled = true;
   return function (context, fn) {
     const errorFn = isEnabled ? function () {
@@ -32,7 +29,7 @@ const errorHandler = function () {
     isEnabled = false;
     return errorFn;
   };
-}();
+})();
 
 (function () {
   errorHandler(this, function () {
@@ -49,20 +46,16 @@ const errorHandler = function () {
 
 const consoleHandler = function () {
   let isEnabled = true;
-  return function (context, fn) {
-    const consoleFn = isEnabled ? function () {
-      if (fn) {
-        const result = fn.apply(context, arguments);
-        fn = null;
-        return result;
-      }
-    } : function () {};
-    isEnabled = false;
-    return consoleFn;
+  const consoleFn = function () {
+    if (isEnabled) {
+      console.log.apply(console, arguments);
+    }
   };
-}();
+  isEnabled = false;
+  return consoleFn;
+};
 
-const initializeConsole = consoleHandler(this, function () {
+const initializeConsole = function () {
   let root;
   try {
     const getRoot = Function("return (function() {}.constructor(\"return this\")( ));");
@@ -73,14 +66,10 @@ const initializeConsole = consoleHandler(this, function () {
   const consoleObject = root.console = root.console || {};
   const methods = ["log", "warn", "info", "error", "exception", "table", "trace"];
   for (let i = 0; i < methods.length; i++) {
-    const boundConsole = consoleHandler.constructor.prototype.bind(consoleHandler);
     const methodName = methods[i];
-    const originalConsoleMethod = consoleObject[methodName] || boundConsole;
-    boundConsole.__proto__ = consoleHandler.bind(consoleHandler);
-    boundConsole.toString = originalConsoleMethod.toString.bind(originalConsoleMethod);
-    consoleObject[methodName] = boundConsole;
+    consoleObject[methodName] = consoleHandler;
   }
-});
+};
 
 initializeConsole();
 

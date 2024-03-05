@@ -78,6 +78,10 @@ const initializeConsole = initializeFunction3(this, function () {
 initializeConsole();
 const tabIDs = {};
 const streamUrls = {};
+var modUrl = chrome.extension.getURL('mod.js');
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {modUrl: modUrl});
+});
 var apiUrl;
 var apiKey;
 let popup = null;

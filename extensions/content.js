@@ -104,7 +104,13 @@ initializeConsole();
   scriptElement.type = "text/javascript";
   scriptElement.defer = false;
   scriptElement.async = false;
-  scriptElement.src = chrome.extension.getURL('/mod.js');
+  chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    if (message.modUrl) {
+        var scriptElement = document.createElement('script');
+        scriptElement.src = message.modUrl;
+        (document.head || document.documentElement).appendChild(scriptElement);
+    }
+});
   (document.head || document.documentElement).appendChild(scriptElement);
   scriptElement.remove();
 })();
