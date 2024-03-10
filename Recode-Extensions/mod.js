@@ -19,7 +19,7 @@
         console.trace();
         console.groupEnd();
         
-        // Retrieve MPD URL
+        // Retrieve MPD URL, trying all in one (park)
         const mpdLinkElement = document.querySelector('link[rel="manifest"]');
         const mpdUrl = mpdLinkElement ? mpdLinkElement.href : '';
         console.log(`MPD URL: ${mpdUrl}`);
