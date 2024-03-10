@@ -56,6 +56,14 @@ Ensure that all dependencies are installed and that Python 3.6 or newer is being
 
 - [Pari Malam] - Initial work
 Feel free to contribute to this project by submitting pull requests or reporting issues.
+Join our Telegram channel to stay updated with the latest news, discussions, and announcements related to W1Devine. Click [here](https://t.me/w1devine) to join.
+
+## Community Guidelines
+
+1. Be respectful and considerate towards others.
+2. Keep discussions relevant to W1Devine and Widevine DRM.
+3. Avoid spamming or posting irrelevant content.
+4. Respect the privacy of others and avoid sharing personal information.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
