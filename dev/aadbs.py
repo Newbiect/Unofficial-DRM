@@ -8,7 +8,7 @@ import time
 from colorama import Fore, Style
 
 def setup_logger():
-    logging.basicConfig(filename='adb_drm_info.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+    logging.basicConfig(filename='adb_drm_info.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
 
 def check_adb():
     # Check if ADB is installed
@@ -49,19 +49,25 @@ def get_live_processes(device_serial=None, interval=5):
     except KeyboardInterrupt:
         print("Live process capture stopped.")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error occurred: {e.stderr}")
-        if "not found" in e.stderr:
-            print(f"{Fore.RED}Error: 'dumpsys' command not found. Make sure your device supports this command.{Style.RESET_ALL}")
-        elif "device unauthorized" in e.stderr:
-            print(f"{Fore.RED}Error: Device unauthorized. Please authorize the device for debugging.{Style.RESET_ALL}")
-        elif "device offline" in e.stderr:
-            print(f"{Fore.RED}Error: Device offline. Make sure the device is connected and reachable.{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.RED}Error: {e.stderr}{Style.RESET_ALL}")
+        handle_adb_error(e)
     except subprocess.TimeoutExpired:
-        logging.error("ADB command timed out.")
-        print(f"{Fore.RED}Error: ADB command timed out. Please check your device connection and try again.{Style.RESET_ALL}")
-        
+        handle_adb_timeout()
+
+def handle_adb_error(error):
+    logging.error(f"ADB command error: {error.stderr}")
+    if "not found" in error.stderr:
+        print(f"{Fore.RED}Error: 'dumpsys' command not found. Make sure your device supports this command.{Style.RESET_ALL}")
+    elif "device unauthorized" in error.stderr:
+        print(f"{Fore.RED}Error: Device unauthorized. Please authorize the device for debugging.{Style.RESET_ALL}")
+    elif "device offline" in error.stderr:
+        print(f"{Fore.RED}Error: Device offline. Make sure the device is connected and reachable.{Style.RESET_ALL}")
+    else:
+        print(f"{Fore.RED}Error: {error.stderr}{Style.RESET_ALL}")
+
+def handle_adb_timeout():
+    logging.error("ADB command timed out.")
+    print(f"{Fore.RED}Error: ADB command timed out. Please check your device connection and try again.{Style.RESET_ALL}")
+
 def get_drm_info(device_serial=None, package_name=None, output_format='json', timeout=None, save_to_file=False):
     # Run adb shell commands to get DRM info
     try:
@@ -107,19 +113,10 @@ def get_drm_info(device_serial=None, package_name=None, output_format='json', ti
         
         return drm_info
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error occurred: {e.stderr}")
-        if "not found" in e.stderr:
-            print(f"{Fore.RED}Error: 'dumpsys' command not found. Make sure your device supports this command.{Style.RESET_ALL}")
-        elif "device unauthorized" in e.stderr:
-            print(f"{Fore.RED}Error: Device unauthorized. Please authorize the device for debugging.{Style.RESET_ALL}")
-        elif "device offline" in e.stderr:
-            print(f"{Fore.RED}Error: Device offline. Make sure the device is connected and reachable.{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.RED}Error: {e.stderr}{Style.RESET_ALL}")
+        handle_adb_error(e)
         return None
     except subprocess.TimeoutExpired:
-        logging.error("ADB command timed out.")
-        print(f"{Fore.RED}Error: ADB command timed out. Please check your device connection and try again.{Style.RESET_ALL}")
+        handle_adb_timeout()
         return None
 
 def parse_timeout(timeout_str):
@@ -146,8 +143,7 @@ def list_devices():
                 devices.append({'serial': device_info[0], 'model': device_info[4], 'manufacturer': device_info[1], 'android_version': device_info[5]})
         return devices
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error occurred: {e.stderr}")
-        print(f"{Fore.RED}Error: {e.stderr}{Style.RESET_ALL}")
+        handle_adb_error(e)
         return []
 
 def get_device_info(device_serial=None):
@@ -162,8 +158,7 @@ def get_device_info(device_serial=None):
         device_info = process.stdout
         return device_info
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error occurred: {e.stderr}")
-        print(f"{Fore.RED}Error: {e.stderr}{Style.RESET_ALL}")
+        handle_adb_error(e)
         return None
 
 if __name__ == "__main__":
