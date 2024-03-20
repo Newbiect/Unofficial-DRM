@@ -5,33 +5,19 @@ import frida
 from Crypto.PublicKey import RSA
 from modules.wv_proto2_pb2 import SignedLicenseRequest
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(filename)s - %(funcName)s - %(lineno)d - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %I:%M:%S %p',
-    level=logging.DEBUG,
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('app.log')  # Save logs to a file
-    ]
-)
 
 class Device:
     def __init__(self, dynamic_function_name, cdm_version, module_names):
         self.logger = logging.getLogger(__name__)
         self.saved_keys = {}
-        self.frida_script = open(
-            './modules/script.js',
-            'r',
-            encoding="utf_8"
-        ).read()
-        self.widevine_libraries = [
-            'libwvhidl.so'
-        ]
+        self.widevine_libraries = module_names
         self.usb_device = frida.get_usb_device()
         self.name = self.usb_device.name
-        self.dynamic_function_name = dynamic_function_name
-        self.cdm_version = cdm_version
-        self.module_names = module_names
+
+        with open('./modules/script.js', 'r', encoding="utf_8") as script:
+            self.frida_script = script.read()
+        self.frida_script = self.frida_script.replace(r'${DYNAMIC_FUNCTION_NAME}', dynamic_function_name)
+        self.frida_script = self.frida_script.replace(r'${CDM_VERSION}', cdm_version)
 
     def export_key(self, key, client_id):
         save_dir = os.path.join(
@@ -77,7 +63,9 @@ class Device:
         public_key = root.Msg.ClientId.Token._DeviceCertificate.PublicKey
         key = RSA.importKey(public_key)
         cur = self.saved_keys.get(key.n)
-        self.export_key(cur, root.Msg.ClientId)
+
+        if cur is not None:
+            self.export_key(cur, root.Msg.ClientId)
 
     def find_widevine_process(self, process_name):
         process = self.usb_device.attach(process_name)
@@ -86,7 +74,13 @@ class Device:
         loaded_modules = []
         try:
             for lib in self.widevine_libraries:
-                loaded_modules.append(script.exports.getmodulebyname(lib))
+                try:
+                    loaded_modules.append(script.exports.getmodulebyname(lib))
+                except frida.core.RPCException as e:
+                    # Hide the cases where the module cannot be found
+                    continue
+                except Exception as e:
+                    raise(e)
         finally:
             process.detach()
             return loaded_modules
@@ -98,6 +92,3 @@ class Device:
         script.load()
         script.exports.hooklibfunctions(library)
         return session
-    
-    def enumerate_processes(self):
-        return self.usb_device.enumerate_processes()
