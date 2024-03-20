@@ -1,19 +1,9 @@
 import io
 import json
 import struct
-import logging
 from base64 import b64decode, b64encode
 from binascii import hexlify
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(filename)s - %(funcName)s - %(lineno)d - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %I:%M:%S %p',
-    level=logging.DEBUG,
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('app.log')  # Save logs to a file
-    ]
-)
 
 def create_table():
     a = []
