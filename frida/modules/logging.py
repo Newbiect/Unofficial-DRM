@@ -1,5 +1,6 @@
 from colorama import init, Fore, Style
 from datetime import datetime
+import logging
 
 def setup_logging():
     init()
