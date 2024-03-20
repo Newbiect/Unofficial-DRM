@@ -4,7 +4,7 @@ import base64
 import frida
 from Crypto.PublicKey import RSA
 from modules.wv_proto2_pb2 import SignedLicenseRequest
-
+from modules.keybox import Keybox
 
 class Device:
     def __init__(self, dynamic_function_name, cdm_version, module_names):
@@ -92,3 +92,21 @@ class Device:
         script.load()
         script.exports.hooklibfunctions(library)
         return session
+
+    def save_key_box(self):
+        try:
+            if self.device['device_id'] is not None and self.device['device_token'] is not None:
+                self.logger.info('saving key box')
+                keybox = Keybox(self.device)
+                box = os.path.join('key_dumps', f'{self.name}/key_boxes/{keybox.system_id}')
+                self.logger.debug(f'saving to {box}')
+                if not os.path.exists(box):
+                    os.makedirs(box)
+                with open(os.path.join(box, f'{keybox.system_id}.bin'), 'wb') as writer:
+                    writer.write(keybox.get_keybox())
+                with open(os.path.join(box, f'{keybox.system_id}.json'), 'w') as writer:
+                    writer.write(keybox.__repr__())
+                self.logger.info(f'saved keybox to {box}')
+        except Exception as error:
+            self.logger.error('unable to save keybox')
+            self.logger.error(error)
