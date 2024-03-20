@@ -3,20 +3,11 @@ import json
 from Crypto.PublicKey import RSA
 from google.protobuf import message
 import logging
-from modules.keybox import Keybox
+from modules.Keybox import Keybox
 from modules.wv_proto2_pb2 import SignedLicenseRequest
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(filename)s - %(funcName)s - %(lineno)d - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %I:%M:%S %p',
-    level=logging.DEBUG,
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('app.log')  # Save logs to a file
-    ]
-)
 
-class SCAN:
+class SCANNER:
     def __init__(self, device_name):
         self.logger = logging.getLogger(__name__)
         self.KEY_DUMP_LOC = 'keydump/'
