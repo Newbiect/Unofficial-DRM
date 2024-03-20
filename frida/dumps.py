@@ -4,12 +4,9 @@ import argparse
 import time
 import logging
 from modules.devices import Device
+from modules.logging import setup_logging
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(lineno)d - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %I:%M:%S %p',
-    level=logging.DEBUG,
-)
+logging = setup_logging()
 
 def main():
     parser = argparse.ArgumentParser(description='Android Widevine L3 dumper.')
@@ -27,16 +24,15 @@ def main():
     cdm_version = args.cdm_version
     module_names = args.module_name
 
-    logger = logging.getLogger("main")
     device = Device(dynamic_function_name, cdm_version, module_names)
-    logger.info('Connected to %s', device.name)
-    logger.info('Scanning all processes')
+    logging.info('Connected to %s', device.name)
+    logging.info('Scanning all processes')
 
     for process in device.enumerate_processes():
         if 'drm' in process.name:
             for library in device.find_widevine_process(process.name):
                 device.hook_to_process(process.name, library)
-    logger.info('Functions hooked, now open the DRM stream test on Bitmovin from your Android device! https://bitmovin.com/demos/drm')
+    logging.info('Functions hooked, now open the DRM stream test on Bitmovin from your Android device! https://bitmovin.com/demos/drm')
 
 
 if __name__ == '__main__':
