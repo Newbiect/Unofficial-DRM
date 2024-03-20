@@ -3,11 +3,11 @@ import json
 from Crypto.PublicKey import RSA
 from google.protobuf import message
 import logging
-from modules.Keybox import Keybox
+from modules.keybox import Keybox
 from modules.wv_proto2_pb2 import SignedLicenseRequest
 
 
-class SCANNER:
+class Scan:
     def __init__(self, device_name):
         self.logger = logging.getLogger(__name__)
         self.KEY_DUMP_LOC = 'keydump/'
