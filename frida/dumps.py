@@ -1,8 +1,7 @@
 import argparse
 import time
 import logging
-from modules.devices import Device
-from modules.scanner import Scan
+from modules.script import Device, Scan, Keybox
 from modules.logging import setup_logging
 
 def main():
