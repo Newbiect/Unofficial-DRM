@@ -1,12 +1,13 @@
 import os
-import logging
 import base64
 import json
 from Crypto.PublicKey import RSA
 from google.protobuf import message
 import frida
-from modules.keybox import Keybox
 from modules.wv_proto2_pb2 import SignedLicenseRequest
+from modules.logging import setup_logging
+
+logging = setup_logging()
 
 class Device:
     def __init__(self, dynamic_function_name, cdm_version, module_names):
