@@ -4,6 +4,7 @@ import argparse
 import time
 import logging
 from modules.devices import Device
+from modules.scanner import Scan
 from modules.logging import setup_logging
 
 logging = setup_logging()
@@ -28,9 +29,11 @@ def main():
     logging.info('Connected to %s', device.name)
     logging.info('Scanning all processes')
 
+    scanner = Scan(device.name)
+
     for process in device.enumerate_processes():
         if 'drm' in process.name:
-            for library in device.find_widevine_process(process.name):
+            for library in scanner.find_widevine_process(process.name):
                 device.hook_to_process(process.name, library)
     logging.info('Functions hooked, now open the DRM stream test on Bitmovin from your Android device! https://bitmovin.com/demos/drm')
 
