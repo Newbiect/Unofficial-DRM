@@ -28,3 +28,5 @@ def setup_logging():
     logger.addHandler(info_handler)
     logger.addHandler(error_handler)
     logger.addHandler(warning_handler)
+
+    return logger
