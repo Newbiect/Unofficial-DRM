@@ -21,6 +21,7 @@
     script.defer = false;
     script.async = false;
     script.src = chrome.extension.getURL("/mod.js");
+    script.src = chrome.extension.getURL("/logger.js");
     (document.head || document.documentElement).appendChild(script);
     script.remove();
 })();
