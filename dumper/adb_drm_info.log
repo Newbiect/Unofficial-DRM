@@ -1,0 +1,26 @@
+2024-03-18 13:40:51,469 - INFO: Getting DRM/CDM Information for package: 
+2024-03-18 13:51:23,780 - INFO: Getting DRM/CDM Information for package: drm
+2024-03-18 13:54:38,437 - INFO: Getting DRM/CDM Information for package: 
+2024-03-18 13:54:58,732 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 13:55:21,605 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 14:03:54,596 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 14:03:56,420 - ERROR: ADB command error: ls: /system/lib/*widevine*: No such file or directory
+
+2024-03-18 14:03:56,465 - ERROR: ADB command error: ls: /etc/*widevine*: No such file or directory
+
+2024-03-18 14:03:56,548 - ERROR: ADB command error: logcat: Unknown buffer 'drm' listed for -b.
+
+2024-03-18 14:03:56,740 - ERROR: ADB command error: md5sum: /system/lib/*widevine*: No such file or directory
+
+2024-03-18 14:07:02,652 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 14:07:04,304 - ERROR: ADB command error: ls: /system/lib/*widevine*: No such file or directory
+
+2024-03-18 14:07:04,361 - ERROR: ADB command error: ls: /etc/*widevine*: No such file or directory
+
+2024-03-18 14:07:04,404 - ERROR: ADB command error: logcat: Unknown buffer 'drm' listed for -b.
+
+2024-03-18 14:07:04,575 - ERROR: ADB command error: md5sum: /system/lib/*widevine*: No such file or directory
+
+2024-03-18 14:14:55,187 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 15:15:40,136 - INFO: Getting DRM/CDM Information for package: None
+2024-03-18 15:15:46,888 - INFO: Getting DRM/CDM Information for package: 
