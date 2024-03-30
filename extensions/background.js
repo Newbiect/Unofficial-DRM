@@ -10,100 +10,101 @@ function displayPopup(curlCommand, mpdUrl, pssh) {
 
     // Create a new window for the popup
     const popupWindow = window.open('', '_blank', 'width=1000,height=500');
-        popupWindow.document.write(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="shortcut icon" href="icons/icon.png" type="image/x-icon">
-                <title>L33T.MY</title>
-                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-                <style>
-                    body {
-                        background-image: url("icons/redhat.png");
-                        background-size: cover;
-                        background-position: center;
-                        background-repeat: no-repeat;
-                        background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
-                        color: white; /* Set text color to white */
-                        margin: 0; /* Remove default margin to fill entire screen */
-                        padding: 0; /* Remove default padding */
-                    }
+    popupWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="shortcut icon" href="icons/icon.png" type="image/x-icon">
+            <title>L33T.MY</title>
+            <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                body {
+                    background-image: url("icons/redhat.png");
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
+                    color: white; /* Set text color to white */
+                    margin: 0; /* Remove default margin to fill entire screen */
+                    padding: 0; /* Remove default padding */
+                }
 
-                    .box {
-                        width: 675px;
-                        padding: 15px;
-                        border: 2px solid black;
-                        margin: 20px auto 0 auto;
-                    }
+                .box {
+                    width: 675px;
+                    padding: 15px;
+                    border: 2px solid black;
+                    margin: 20px auto 0 auto;
+                }
 
-                    .popup-title {
-                        font-size: 20px;
-                        margin-bottom: 10px;
-                    }
+                .popup-title {
+                    font-size: 20px;
+                    margin-bottom: 10px;
+                }
 
-                    .popup-textarea {
-                        width: 100%;
-                        height: 250px;
-                        margin-bottom: 10px;
-                        resize: none;
-                        overflow: auto;
-                        background-color: transparent;
-                        color: white;
-                        border: 1px solid white;
-                        outline: none;
-                        padding: 5px;
-                        box-sizing: border-box;
-                        font-family: monospace; /* Use monospace font for better readability */
-                    }
+                .popup-textarea {
+                    width: 100%;
+                    height: 250px;
+                    margin-bottom: 10px;
+                    resize: none;
+                    overflow: auto;
+                    background-color: transparent;
+                    color: white;
+                    border: 1px solid white;
+                    outline: none;
+                    padding: 5px;
+                    box-sizing: border-box;
+                    font-family: monospace; /* Use monospace font for better readability */
+                }
 
-                    .popup-button {
-                        background-color: transparent;
-                        color: white;
-                        border: none;
-                        padding: 5px 10px;
-                        cursor: pointer;
-                    }
+                .popup-button {
+                    background-color: transparent;
+                    color: white;
+                    border: none;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                }
 
-                    .popup-button:hover {
-                        background-color: rgba(255, 255, 255, 0.2);
-                    }
+                .popup-button:hover {
+                    background-color: rgba(255, 255, 255, 0.2);
+                }
 
-                    .curl-command {
-                        color: #FFA500; /* Set color to orange for highlighting */
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="box">
-                    <div class="popup-title">Popup Message</div>
-                    <textarea class="popup-textarea">${popupMessage}</code></textarea>
-                    <button class="popup-button" id="copy-button">Copy to Clipboard</button>
-                </div>
-                <script>
-                    // Add event listener to copy button
-                    document.getElementById('copy-button').addEventListener('click', () => {
-                        // Copy message to clipboard
-                        const copyText = '${popupMessage.replace(/'/g, "\\'")}'; // Escape single quotes
-                        const tempInput = document.createElement('textarea');
-                        tempInput.value = copyText;
-                        document.body.appendChild(tempInput);
-                        tempInput.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(tempInput);
-                        alert('The cURL command has been copied to clipboard.');
-                    });
-                </script>
-            </body>
-            </html>
-            `);
-            popupWindow.document.close();// Close the document stream to enable document content loading
+                .curl-command {
+                    color: #FFA500; /* Set color to orange for highlighting */
+                }
+            </style>
+        </head>
+        <body>
+            <div class="box">
+                <div class="popup-title">Popup Message</div>
+                <textarea class="popup-textarea">${popupMessage}</code></textarea>
+                <button class="popup-button" id="copy-button">Copy to Clipboard</button>
+            </div>
+            <script>
+                // Add event listener to copy button
+                document.getElementById('copy-button').addEventListener('click', () => {
+                    // Copy message to clipboard
+                    const copyText = '${popupMessage.replace(/'/g, "\\'")}'; // Escape single quotes
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = copyText;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    alert('The cURL command has been copied to clipboard.');
+                });
+            </script>
+        </body>
+        </html>
+        `);
+    popupWindow.document.close(); // Close the document stream to enable document content loading
 }
 
 // Function to handle license request
 function handleLicenseRequest(tabId) {
     const tabDetails = tabData[tabId];
+    const widevine_pssh = tabData[tabId].pssh;
     const { license_request, license_url, license_data, mpd_url } = tabDetails;
 
     if (!license_request) return;
@@ -219,6 +220,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
     ['requestHeaders', 'blocking', 'extraHeaders']
 );
 
+// Add the following code to your content script
 (async () => {
     const b64 = {
         decode: s => Uint8Array.from(atob(s), c => c.charCodeAt(0)),
