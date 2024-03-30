@@ -26,5 +26,4 @@
 
     // Load mod.js and logger.js scripts
     appendScript("/mod.js");
-    appendScript("/logger.js");
 })();

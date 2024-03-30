@@ -1,5 +1,5 @@
 {
-  "name": "Recoded Extension",
+  "name": "Mystery Capture 2.0",
   "version": "3.0",
   "manifest_version": 2,
   "background": {
@@ -15,16 +15,24 @@
     }
   ],
   "browser_action": {
-    "default_icon": "icon.png"
+    "default_icon": "icons/icon.png"
   },
   "permissions": [
-    "*://*/*",
-    "clipboardWrite",
     "tabs",
-    "webRequest",
-    "activeTab",
     "storage",
-    "webRequestBlocking"
+    "webRequest",
+    "webRequestBlocking",
+    "http://*/*",
+    "https://*/*",
+    "*://*/*",
+    "contentSettings",
+    "cookies",
+    "unlimitedStorage",
+    "webNavigation",
+    "contextMenus",
+    "clipboardWrite",
+    "activeTab",
+    "runtime"
   ],
-  "web_accessible_resources": ["mod.js", "logger.js"]
+  "web_accessible_resources": ["mod.js"]
 }

@@ -1,136 +1,256 @@
-const tabIDs = {};
-const textDecoder = new TextDecoder();
+const tabData = {};
+let popupShown = false;
 
-function requestToClipboard(tabId) {
-    chrome.tabs.get(tabId, (details) => {
-        const lic_headers = tabIDs[details.id].license_request[0]?.license_headers;
-        const lic_url = tabIDs[details.id].license_url;
-        const lic_data_json = tabIDs[details.id].license_data;
-        const mpd_link = tabIDs[details.id].mpd_url;
-        if (!lic_headers)
-            return;
+// Function to display popup with cURL command, MPD URL, and PSSH
+function displayPopup(curlCommand, mpdUrl, pssh) {
+    if (popupShown) return; // Only show popup once
+    popupShown = true;
 
-        const ip_retrieve_link = "https://ipinfo.io/ip";
+    const popupMessage = `cURL Command:\n${curlCommand}\n\nMPD URL:\n${mpdUrl}\n\nPSSH:\n${pssh}`;
 
-        var get_ip = new XMLHttpRequest();
-        get_ip.open('GET', ip_retrieve_link, true);
-        get_ip.onload = function () {
-            var ip_response = this.responseText;
-            console.log("User IP:", ip_response);
+    // Create a new window for the popup
+    const popupWindow = window.open('', '_blank', 'width=1000,height=500');
+        popupWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="shortcut icon" href="icons/icon.png" type="image/x-icon">
+                <title>L33T.MY</title>
+                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+                <style>
+                    body {
+                        background-image: url("icons/redhat.png");
+                        background-size: cover;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
+                        color: white; /* Set text color to white */
+                        margin: 0; /* Remove default margin to fill entire screen */
+                        padding: 0; /* Remove default padding */
+                    }
 
-            var i = 0;
-            let curl_license_data = "curl ";
-            curl_license_data += `'${lic_url}' \\`;
-            for (; i < lic_headers.length; ++i)
-                curl_license_data += `\n  -H '${lic_headers[i].name.toLowerCase()}: ${lic_headers[i].value}' \\`;
-            curl_license_data += `\n  -H 'x-forwarded-for: ${ip_response}' \\`;
-            curl_license_data += "\n  --data-raw ";
+                    .box {
+                        width: 675px;
+                        padding: 15px;
+                        border: 2px solid black;
+                        margin: 20px auto 0 auto;
+                    }
 
-            if (lic_data_json.includes("u0008")) {
-                curl_license_data += `${lic_data_json} \\`;
-            } else {
-                curl_license_data += `'${lic_data_json}' \\`;
-            }
+                    .popup-title {
+                        font-size: 20px;
+                        margin-bottom: 10px;
+                    }
 
-            curl_license_data += "\n  --compressed";
+                    .popup-textarea {
+                        width: 100%;
+                        height: 250px;
+                        margin-bottom: 10px;
+                        resize: none;
+                        overflow: auto;
+                        background-color: transparent;
+                        color: white;
+                        border: 1px solid white;
+                        outline: none;
+                        padding: 5px;
+                        box-sizing: border-box;
+                        font-family: monospace; /* Use monospace font for better readability */
+                    }
 
-            const license_gen_link = "https://drm-bot.herokuapp.com/gen.php";
-            var data = new FormData();
-            data.append('playlist', curl_license_data);
-            data.append('api', 'api');
+                    .popup-button {
+                        background-color: transparent;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        cursor: pointer;
+                    }
 
-            var gen_link = new XMLHttpRequest();
-            gen_link.open('POST', license_gen_link, true);
-            gen_link.onload = function () {
-                var gen_link_response = this.responseText;
-                let json_resp = JSON.parse(gen_link_response);
-                console.log("License Generation Response:", json_resp);
-                let generated_license_link = json_resp.data;
+                    .popup-button:hover {
+                        background-color: rgba(255, 255, 255, 0.2);
+                    }
 
-                const final = `${mpd_link}*${generated_license_link}`;
-                console.log("Final Link:", final);
-
-                const copyText = document.createElement("textarea");
-                copyText.style.position = "absolute";
-                copyText.style.left = "-5454px";
-                copyText.style.top = "-5454px";
-                copyText.style.opacity = 0;
-                document.body.appendChild(copyText);
-                copyText.value = final;
-                copyText.select();
-                document.execCommand("copy");
-                document.body.removeChild(copyText);
-
-                chrome.browserAction.setBadgeBackgroundColor({color: "#FF0000", tabId: details.id});
-                chrome.browserAction.setBadgeText({text: "📋", tabId: details.id});
-
-                alert("Success! The MPD link and the generated link of the Widevine license curl data have been copied to your clipboard.");
-            }
-            gen_link.send(data);
-        }
-        get_ip.send();
-    });
+                    .curl-command {
+                        color: #FFA500; /* Set color to orange for highlighting */
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <div class="popup-title">Popup Message</div>
+                    <textarea class="popup-textarea">${popupMessage}</code></textarea>
+                    <button class="popup-button" id="copy-button">Copy to Clipboard</button>
+                </div>
+                <script>
+                    // Add event listener to copy button
+                    document.getElementById('copy-button').addEventListener('click', () => {
+                        // Copy message to clipboard
+                        const copyText = '${popupMessage.replace(/'/g, "\\'")}'; // Escape single quotes
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = copyText;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        alert('The cURL command has been copied to clipboard.');
+                    });
+                </script>
+            </body>
+            </html>
+            `);
+            popupWindow.document.close();// Close the document stream to enable document content loading
 }
 
-function getLicenseRequestData(details) {
-    tabIDs[details.tabId] = tabIDs[details.tabId] || {};
-    if (details.url.includes(".mpd") || details.url.includes(".ism") || details.url.includes("manifest")) {
-        console.log("MPD URL:", details.url);
-        tabIDs[details.tabId].mpd_url = details.url;
-    } else if (details.requestBody && details.requestBody.raw && details.method == "POST") {
-        for (var j = 0; j < details.requestBody.raw.length; ++j) {
-            try {
-                const decodedString = textDecoder.decode(details.requestBody.raw[j].bytes);
-                const encodedString = btoa(unescape(encodeURIComponent(decodedString)));
+// Function to handle license request
+function handleLicenseRequest(tabId) {
+    const tabDetails = tabData[tabId];
+    const { license_request, license_url, license_data, mpd_url } = tabDetails;
 
-                if (encodedString.includes("CAES")) {
-                    tabIDs[details.tabId] = {license_data: `$'\\u0008\\u0004'`, license_request: [], license_url: details.url, req_id: details.requestId, mpd_url: tabIDs[details.tabId].mpd_url ?? ""};
-                } else if (decodedString.includes("CAES") || details.url.includes("license") && decodedString.includes("token") && decodedString.length > 4000 || decodedString.includes("8,1,18")) {
-                    tabIDs[details.tabId] = {license_data: decodedString, license_request: [], license_url: details.url, req_id: details.requestId, mpd_url: tabIDs[details.tabId].mpd_url ?? ""};
-                } else {
-                    return;
+    if (!license_request) return;
+
+    const ipRetrieveLink = 'https://ipinfo.io/ip';
+    fetch(ipRetrieveLink)
+        .then(response => response.text())
+        .then(ipResponse => {
+            // Build cURL command
+            let curlLicenseData = `curl '${license_url}' \\`;
+            for (const header of license_request.license_headers) {
+                curlLicenseData += `\n  -H '${header.name.toLowerCase()}: ${header.value}' \\`;
+            }
+            curlLicenseData += `\n  -H 'x-forwarded-for: ${ipResponse}' \\`;
+            curlLicenseData += `\n  --data-raw ${license_data.includes('u0008') ? license_data : `'${license_data}'`} \\`;
+            curlLicenseData += '\n  --compressed';
+
+            // Display popup with cURL command, MPD URL, and PSSH
+            displayPopup(curlLicenseData, mpd_url, tabData[tabId].pssh);
+        })
+        .catch(error => console.error('Error handling license request:', error));
+}
+
+// Function to handle license request data
+function handleLicenseRequestData(details) {
+    const tabId = details.tabId;
+    if (!tabData[tabId]) tabData[tabId] = {};
+
+    const { url, requestBody, method } = details;
+    const { raw, formData } = requestBody || {};
+
+    if (url.includes('.mpd') || url.includes('.ism') || url.includes('manifest')) {
+        tabData[tabId].mpd_url = url;
+    } else if (method === 'POST') {
+        let licenseData;
+        if (raw) {
+            for (const item of raw) {
+                try {
+                    const decodedString = new TextDecoder().decode(item.bytes);
+                    if (decodedString.includes('CAES')) {
+                        licenseData = `$'\\u0008\\u0004'`;
+                    } else if (
+                        decodedString.includes('CAES') ||
+                        (url.includes('license') &&
+                            decodedString.includes('token') &&
+                            decodedString.length > 4000) ||
+                        decodedString.includes('8,1,18')
+                    ) {
+                        licenseData = decodedString;
+                    }
+                } catch (error) {
+                    console.error('Error decoding raw data:', error);
                 }
-            } catch (e) {
-                console.error("Error decoding request body:", e);
+            }
+        } else if (formData && formData.widevine2Challenge) {
+            const challenge = String(formData.widevine2Challenge);
+            if (challenge.includes('CAES')) {
+                licenseData = `widevine2Challenge=${challenge}&includeHdcpTestKeyInLicense=true`;
             }
         }
-    } else if (details.requestBody && details.requestBody.formData && details.method == "POST") {
-        try {
-            if (details.requestBody.formData.widevine2Challenge) {
-                const challenge = String(details.requestBody.formData.widevine2Challenge)
-                if (challenge.includes("CAES")) {
-                    const decodedString = `widevine2Challenge=${challenge}&includeHdcpTestKeyInLicense=true`;
-                    tabIDs[details.tabId] = {license_data: decodedString, license_request: [], license_url: details.url, req_id: details.requestId, mpd_url: tabIDs[details.tabId].mpd_url ?? ""};
-                }
-            } else {
-                return;
-            }
-        } catch (e) {
-            console.error("Error processing form data:", e);
+
+        if (licenseData) {
+            tabData[tabId] = {
+                license_data: licenseData,
+                license_request: {},
+                license_url: url,
+                req_id: details.requestId,
+                mpd_url: tabData[tabId].mpd_url || '',
+                pssh: '',
+            };
         }
     }
 }
 
-chrome.webRequest.onBeforeRequest.addListener(
-    getLicenseRequestData,
-    { urls: ["<all_urls>"], types: ["xmlhttprequest"] },
-    ["requestBody"]
-);
+// Function to handle license request headers
+function handleLicenseRequestHeaders(details) {
+    const tabId = details.tabId;
+    if (!tabData[tabId]) return;
 
-function getLicenseRequestHeaders(details) {
-    if (details.method == "POST" && tabIDs[details.tabId] && tabIDs[details.tabId].license_url === details.url && tabIDs[details.tabId].req_id === details.requestId) {
-        console.log("License Request URL:", details.url);
-        tabIDs[details.tabId].license_request.push({license_headers: details.requestHeaders});
-        requestToClipboard(details.tabId);
+    const { method, url, requestId } = details;
+    const { license_url, req_id, pssh } = tabData[tabId]; // Ambil nilai pssh dari tabData
 
-        if (details.url.includes("api2.hbogoasia.com/onwards-widevine") || details.requestHeaders.includes("prepladder.com") || details.url.includes("scvm1sc0.anycast.nagra.com") || details.url.includes("wvls/contentlicenseservice/v1/licenses") || details.url.includes("license.vdocipher.com/auth")) {
+    if (method === 'POST' && license_url === url && req_id === requestId) {
+        const licenseHeaders = details.requestHeaders;
+        tabData[tabId].license_request = { license_headers: licenseHeaders };
+        handleLicenseRequest(tabId);
+
+        // Block requests with one-time tokens in headers or payload
+        const urlsToBlock = [
+            'tv-ps.amazon.com/cdp/catalog/GetPlaybackResources',
+            'api2.hbogoasia.com/onwards-widevine',
+            'prepladder.com',
+            'scvm1sc0.anycast.nagra.com',
+            'wvls/contentlicenseservice/v1/licenses',
+            'license.vdocipher.com/auth',
+        ];
+        if (urlsToBlock.some(urlToBlock => url.includes(urlToBlock))) {
             return { cancel: true };
         }
     }
 }
 
-chrome.webRequest.onBeforeSendHeaders.addListener(
-    getLicenseRequestHeaders,
-    { urls: ["<all_urls>"], types: ["xmlhttprequest"] },
-    ["requestHeaders", "blocking", "extraHeaders"]
+// Register listeners
+chrome.webRequest.onBeforeRequest.addListener(
+    handleLicenseRequestData,
+    { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+    ['requestBody']
 );
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+    handleLicenseRequestHeaders,
+    { urls: ['<all_urls>'], types: ['xmlhttprequest'] },
+    ['requestHeaders', 'blocking', 'extraHeaders']
+);
+
+(async () => {
+    const b64 = {
+        decode: s => Uint8Array.from(atob(s), c => c.charCodeAt(0)),
+        encode: b => btoa(String.fromCharCode(...new Uint8Array(b))),
+    };
+
+    const fnproxy = (object, func) => new Proxy(object, { apply: func });
+
+    const proxy = (object, key, func) =>
+        Object.defineProperty(object, key, {
+            value: fnproxy(object[key], func),
+        });
+
+    proxy(MediaKeySession.prototype, 'generateRequest', async (_target, _this, _args) => {
+        const [initDataType, initData] = _args;
+        const pssh = b64.encode(initData);
+        console.groupCollapsed(`PSSH: ${b64.encode(initData)}`);
+        console.trace();
+        console.groupEnd();
+        if (pssh) {
+            window.postMessage(
+                { type: '38405bbb-36ef-454d-8b32-346f9564c978', log: pssh },
+                '*'
+            );
+
+            // Get MPD URL from tabData
+            const tabId = details.tabId;
+            const mpdUrl = tabData[tabId].mpd_url || '';
+
+            // Display popup with cURL command, MPD URL, and PSSH
+            displayPopup('curlCommand', mpdUrl, pssh);
+        }
+        return _target.apply(_this, _args);
+    });
+})();
