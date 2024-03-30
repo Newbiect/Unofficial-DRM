@@ -40,10 +40,10 @@ challenge_api_request = session.post(api_base_url + api_cdm_device + '/get_licen
 
 challenge_b64 = challenge_api_request['data']["challenge_b64"]
 challenge_raw = base64.b64decode(challenge_b64)
-logging.info(challenge_raw)
+
 license_raw = requests.post(license_url, headers=license_headers, data=challenge_raw).content
 license_b64 = base64.b64encode(license_raw).decode()
-logging.info(license_b64)
+
 parse_license_data = {'session_id': session_id , 'license_message': license_b64}
 license_api_request = requests.post(api_base_url + api_cdm_device + '/parse_license', json=parse_license_data, headers=api_headers).json()
 
