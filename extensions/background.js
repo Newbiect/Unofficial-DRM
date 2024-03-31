@@ -1,111 +1,165 @@
 const tabData = {};
 let popupShown = false;
 
-// Function to display popup with cURL command, MPD URL, and PSSH
-function displayPopup(curlCommand, mpdUrl, pssh) {
+// Function to display popup with cURL command, Python command, MPD URL, and PSSH
+function displayPopup(curlCommand, pythonCommand, mpdUrl, pssh) {
     if (popupShown) return; // Only show popup once
     popupShown = true;
 
-    const popupMessage = `cURL Command:\n${curlCommand}\n\nMPD URL:\n${mpdUrl}\n\nPSSH:\n${pssh}`;
+    const popupMessage = `CURL REQUESTS:\n\n${curlCommand}\n\n================================================================================\n\nPY REQUESTS:\n\n${pythonCommand}\n\n================================================================================\n\nMPD URL:\n\n${mpdUrl}\n\n================================================================================\n\nPSSH:\n\n${pssh}`;
 
     // Create a new window for the popup
-    const popupWindow = window.open('', '_blank', 'width=1000,height=500');
+    const popupWindow = window.open('', '_blank', 'width=1000,height=1000');
     popupWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="shortcut icon" href="icons/icon.png" type="image/x-icon">
-            <title>L33T.MY</title>
-            <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-            <style>
-                body {
-                    background-image: url("icons/redhat.png");
-                    background-size: cover;
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
-                    color: white; /* Set text color to white */
-                    margin: 0; /* Remove default margin to fill entire screen */
-                    padding: 0; /* Remove default padding */
-                }
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="shortcut icon" href="icons/icon.png" type="image/x-icon">
+                <title>L33T.MY</title>
+                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+                <style>
+                    body {
+                        background-image: url("icons/redhat.png");
+                        background-size: cover;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-attachment: fixed; /* Ensure the background image stays fixed while scrolling */
+                        margin: 0; /* Remove default margin to fill entire screen */
+                        padding: 0; /* Remove default padding */
+                    }
 
-                .box {
-                    width: 675px;
-                    padding: 15px;
-                    border: 2px solid black;
-                    margin: 20px auto 0 auto;
-                }
+                    .box {
+                        width: 90%;
+                        max-width: 800px;
+                        padding: 15px;
+                        border: 2px solid black;
+                        margin: 20px auto 0 auto;
+                    }
 
-                .popup-title {
-                    font-size: 20px;
-                    margin-bottom: 10px;
-                }
+                    .popup-title {
+                        font-size: 20px;
+                        margin-bottom: 10px;
+                    }
 
-                .popup-textarea {
-                    width: 100%;
-                    height: 250px;
-                    margin-bottom: 10px;
-                    resize: none;
-                    overflow: auto;
-                    background-color: transparent;
-                    color: white;
-                    border: 1px solid white;
-                    outline: none;
-                    padding: 5px;
-                    box-sizing: border-box;
-                    font-family: monospace; /* Use monospace font for better readability */
-                }
+                    .popup-textarea {
+                        width: calc(100% - 30px);
+                        height: 300px; /* Increased height for better display */
+                        margin-bottom: 10px;
+                        resize: none;
+                        overflow: auto;
+                        background-color: transparent;
+                        border: 1px solid white;
+                        outline: none;
+                        padding: 5px;
+                        box-sizing: border-box;
+                        font-family: monospace; /* Use monospace font for better readability */
+                        font-size: 13px;
+                        color: white; /* Set text color to white */
+                    }
 
-                .popup-button {
-                    background-color: transparent;
-                    color: white;
-                    border: none;
-                    padding: 5px 10px;
-                    cursor: pointer;
-                }
+                    .popup-button {
+                        background-color: transparent;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        cursor: pointer;
+                    }
 
-                .popup-button:hover {
-                    background-color: rgba(255, 255, 255, 0.2);
-                }
+                    .popup-button:hover {
+                        background-color: rgba(255, 255, 255, 0.2);
+                    }
 
-                .curl-command {
-                    color: #FFA500; /* Set color to orange for highlighting */
-                }
-            </style>
-        </head>
-        <body>
-            <div class="box">
-                <div class="popup-title">Popup Message</div>
-                <textarea class="popup-textarea">${popupMessage}</code></textarea>
-                <button class="popup-button" id="copy-button">Copy to Clipboard</button>
-            </div>
-            <script>
-                // Add event listener to copy button
-                document.getElementById('copy-button').addEventListener('click', () => {
-                    // Copy message to clipboard
-                    const copyText = '${popupMessage.replace(/'/g, "\\'")}'; // Escape single quotes
-                    const tempInput = document.createElement('textarea');
-                    tempInput.value = copyText;
-                    document.body.appendChild(tempInput);
-                    tempInput.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(tempInput);
-                    alert('The cURL command has been copied to clipboard.');
-                });
-            </script>
-        </body>
-        </html>
-        `);
+                    .table-container {
+                        display: table;
+                        width: 100%;
+                    }
+
+                    .table-row {
+                        display: table-row;
+                    }
+
+                    .table-cell {
+                        display: table-cell;
+                        vertical-align: top;
+                        padding: 15px; /* Increased padding for better spacing */
+                    }
+
+                    .section-title {
+                        font-size: 16px;
+                        margin-bottom: 5px;
+                        color: white; /* Set text color to white */
+                    }
+
+                    .curl-command {
+                        color: white; /* Set color to orange for cURL requests */
+                    }
+
+                    .python-command {
+                        color: white; /* Set color to gold for Python requests */
+                    }
+
+                    .mpd-url {
+                        color: white; /* Set color to cyan for MPD URL */
+                    }
+
+                    .pssh {
+                        color: white; /* Set color to magenta for PSSH */
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="box">
+                    <div class="popup-title">SSUP BITCH</div>
+                    <div class="table-container">
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <div class="section-title" style="color: red;">CURL REQUESTS:</div>
+                                <textarea class="popup-textarea curl-command">${curlCommand}</textarea>
+                            </div>
+                            <div class="table-cell">
+                                <div class="section-title" style="color: red;">PYTHON REQUESTS:</div>
+                                <textarea class="popup-textarea python-command">${pythonCommand}</textarea>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="table-cell">
+                                <div class="section-title" style="color: red;">MPD URL:</div>
+                                <textarea class="popup-textarea mpd-url">${mpdUrl}</textarea>
+                            </div>
+                            <div class="table-cell">
+                                <div class="section-title" style="color: red;">PSSH:</div>
+                                <textarea class="popup-textarea pssh">${pssh}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="popup-button" id="copy-button">Copy to Clipboard</button>
+                </div>
+                <script>
+                    // Add event listener to copy button
+                    document.getElementById('copy-button').addEventListener('click', () => {
+                        // Copy message to clipboard
+                        const copyText = '${popupMessage.replace(/'/g, "\\'")}'; // Escape single quotes
+                        const tempInput = document.createElement('textarea');
+                        tempInput.value = copyText;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        alert('The commands have been copied to clipboard.');
+                    });
+                </script>
+            </body>
+            </html>
+            `);
     popupWindow.document.close(); // Close the document stream to enable document content loading
 }
 
 // Function to handle license request
 function handleLicenseRequest(tabId) {
     const tabDetails = tabData[tabId];
-    const widevine_pssh = tabData[tabId].pssh;
-    const { license_request, license_url, license_data, mpd_url } = tabDetails;
+    const { license_request, license_url, license_data, mpd_url, pssh } = tabDetails;
 
     if (!license_request) return;
 
@@ -122,8 +176,15 @@ function handleLicenseRequest(tabId) {
             curlLicenseData += `\n  --data-raw ${license_data.includes('u0008') ? license_data : `'${license_data}'`} \\`;
             curlLicenseData += '\n  --compressed';
 
-            // Display popup with cURL command, MPD URL, and PSSH
-            displayPopup(curlLicenseData, mpd_url, tabData[tabId].pssh);
+            // Build Python command
+            let pythonLicenseData = `import requests\n\nurl = '${license_url}'\nheaders = {\n`;
+            for (const header of license_request.license_headers) {
+                pythonLicenseData += `    '${header.name.toLowerCase()}': '${header.value}',\n`;
+            }
+            pythonLicenseData += `    'x-forwarded-for': '${ipResponse}'\n}\n\nresponse = requests.post(url, headers=headers, data='${license_data}', verify=False)\nprint(response.text)`;
+
+            // Display popup with cURL command, Python command, MPD URL, and PSSH
+            displayPopup(curlLicenseData, pythonLicenseData, mpd_url, pssh);
         })
         .catch(error => console.error('Error handling license request:', error));
 }
@@ -250,8 +311,15 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
             const tabId = details.tabId;
             const mpdUrl = tabData[tabId].mpd_url || '';
 
-            // Display popup with cURL command, MPD URL, and PSSH
-            displayPopup('curlCommand', mpdUrl, pssh);
+            // Generate Python command
+            let pythonCommand = `import requests\n\nurl = '${license_url}'\nheaders = {\n`;
+            for (const header of license_request.license_headers) {
+                pythonCommand += `    '${header.name.toLowerCase()}': '${header.value}',\n`;
+            }
+            pythonCommand += `    'x-forwarded-for': '${ipResponse}'\n}\n\nresponse = requests.post(url, headers=headers, data='${license_data}', verify=False)\nprint(response.text)`;
+
+            // Display popup with cURL command, Python command, MPD URL, and PSSH
+            displayPopup(curlLicenseData, pythonCommand, mpdUrl, pssh);
         }
         return _target.apply(_this, _args);
     });
