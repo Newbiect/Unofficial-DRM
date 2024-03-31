@@ -21,7 +21,7 @@ function displayPopup(curlCommand, pythonCommand, mpdUrl, pssh) {
                 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
                 <style>
                     body {
-                        background-image: url("icons/redhat.png");
+                        background-image: url("icons/w00t.gif");
                         background-size: cover;
                         background-position: center;
                         background-repeat: no-repeat;
