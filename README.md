@@ -1,72 +1,16 @@
-# Widevine License Server Simulator
+This repository serves as a storage place for files created for the purpose of self-learning and self-referencing. Within this repository, you can find various types of files related to specific topics or projects that you are studying or working on.
 
-## Introduction
+The objectives of this repository are as follows:
 
-This project provides a Python-based simulator for generating Widevine license requests and responses. It demonstrates the process of encrypting a license payload, generating a license challenge, and creating a signed license response using RSA digital signatures. This tool can be useful for testing DRM implementations in media applications that rely on Widevine for content protection.
+1. **Self-Learning:** This repository can be used to store code snippets or projects that you create while learning or developing new skills. You can revisit your progress over time and track your development in a particular topic or programming language.
 
-## Table of Contents
+2. **Self-Reference:** The repository can also serve as a self-reference for future use. You can store various code examples, notes, or tutorials that you find or create yourself for easy access when you need them later.
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Features](#features)
-- [Dependencies](#dependencies)
-- [Configuration](#configuration)
-- [Examples](#examples)
-- [Troubleshooting](#troubleshooting)
-- [Contributors](#contributors)
-- [License](#license)
+3. **Project Storage:** The repository can also be used to store small projects or code examples that you create during the learning process. You can organize these projects into a structured directory format for easy navigation and searching in the future.
 
-## Installation
+4. **Sharing with the Community:** Although its primary purpose is for personal learning and reference, you may also choose to share this repository with the community or fellow developers. This can provide additional benefits as you can receive feedback and share knowledge with others.
 
-To use this simulator, you need Python 3.6 or later and the `pycryptodome` package. Install the dependencies with:
-
-```bash
-pip install pycryptodome
-```
-
-## Usage
-
-Run the script directly in your Python environment. Ensure all required parameters (`provider`, `content_id`, `policy_id`, etc.) are correctly set in the script before execution.
-
-## Features
-
-- Generation of encrypted license payloads using AES in CTR mode.
-- RSA key pair generation for digital signatures.
-- Creation of Widevine license challenges and responses.
-- Support for custom Widevine license server URL and device properties configuration.
-
-## Dependencies
-
-- Python 3.6+
-- Pycryptodome
-
-## Configuration
-
-Before running the script, you should configure the license payload and key system parameters according to your specific requirements. These include setting the appropriate content ID, policy ID, device brand, model, OS version, and manufacturer details.
-
-## Examples
-
-The script provided demonstrates a complete workflow for creating a Widevine license challenge and response. You can customize the `license_payload` and `key_system` dictionaries with your specific values to simulate different scenarios.
-
-## Troubleshooting
-
-Ensure that all dependencies are installed and that Python 3.6 or newer is being used. If you encounter any issues with encryption or RSA signing, verify that the `pycryptodome` library is correctly installed and up to date.
-
-## Contributors
-
-- [Pari Malam] - Initial work
-Feel free to contribute to this project by submitting pull requests or reporting issues.
-Join our Telegram channel to stay updated with the latest news, discussions, and announcements related to W1Devine. Click [here](https://t.me/w1devine) to join.
-
-## Community Guidelines
-
-1. Be respectful and considerate towards others.
-2. Keep discussions relevant to W1Devine and Widevine DRM.
-3. Avoid spamming or posting irrelevant content.
-4. Respect the privacy of others and avoid sharing personal information.
-
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+Thus, this repository is a useful tool for managing and storing various information, projects, and code examples related to your personal learning and development.
 
 ## A typical WidevineCdm setup for Windows x64 will contain the following files:
 
